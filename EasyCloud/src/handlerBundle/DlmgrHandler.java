@@ -10,6 +10,9 @@ import com.oracle.solaris.rad.dlmgr.VNIC;
 
 import connection.ConnContainer;
 
+import org.apache.log4j.Logger; 
+
+
 import java.util.*;
 import java.io.*;
 
@@ -23,10 +26,33 @@ import java.io.*;
 * @version  0.1     
 */ 
 public class DlmgrHandler {
+	private Connection con = null;
+	private DatalinkManager dm_obj;
+	private Logger logger;
+	
+	public DlmgrHandler(Connection con) throws RadException, IOException {
+		this.con = con;
+		dm_obj=con.getObject(new DatalinkManager());
+		this.logger=Logger.getLogger(DlmgrHandler.class);
+	}
+	
+	public void dladm_show() {
+		
+	}
+	public VNIC getVNIC(String vnic_name) throws RadException, IOException {
+		
+		for (ADRName name : this.con.listObjects(new VNIC())){
+			VNIC vnic = con.getObject(name);
+			
+			if (vnic.getName().equals(vnic_name))
+				return vnic;
+		}
+		this.logger.log(null, "Doesn't found vnic: " + vnic_name);
+		return null;
+	}
+	
 	
 	public static Map<String, DLValue> create_properties(Map<String, String> source){
-		
-		
 		
 		return null;
 	}
@@ -36,6 +62,7 @@ public class DlmgrHandler {
 								   Map<String, DLValue> properties ) {
 		try {
 			DatalinkManager dm_obj = con.getObject(new DatalinkManager());
+			
 			
 			
 		} catch (RadException e) {
@@ -49,6 +76,9 @@ public class DlmgrHandler {
 	}
 	
 	public static void main(String[] args) throws Exception {
+
+	}
+	public void test_create_vnic() throws RadException, IOException {
 		Connection con = ConnContainer.getConnection("sct-x42-18");
 		DatalinkManager dm_obj=con.getObject(new DatalinkManager());
 
@@ -74,7 +104,6 @@ public class DlmgrHandler {
 			System.out.format("Key =¡¡%s, Value = %s \n", entry.getKey().toString(), entry.getValue().getSval());
 		}
 		//dm_obj.deleteVNIC("vnic1",null);
-
 	}
 	
 }
